@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dress Shop Bill Calculator</title>
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<style>
+    .background-image {
+        background-size: cover;
+        background-position: center;
+        padding: 50px 0;
+    }
+    .details-container {
+        background-image: url('./shopping.png');
+        background-size: cover;
+        background-position: center;
+        padding: 50px;
+        text-align: center;
+    }
+    .details-content {
+        background-color: rgba(255, 255, 255, 0.8);
+        padding: 20px;
+        border-radius: 10px;
+        display: inline-block;
+    }
+</style>
+</head>
+<body class="background-image" style="background-image: url('./shopping.png');">
+<div class="container">
+    <div class="bg-light p-4 rounded">
+        <h2 class="mb-4 text-center">Dress Shop Bill Calculator</h2>
+        <form id="dressForm">
+            <div id="dresses">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="dress1">Dress:</label>
+                        <select class="form-control" id="dress1" required>
+                            <option value="">Select Dress</option>
+                            <option value="frock">frock</option>
+                            <option value="t-shirt">t-shirt</option>
+                            <option value="pant">pant</option>
+                            <option value="shirt">shirt</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="price1">Price ($):</label>
+                        <input type="text" class="form-control price" id="price1" disabled>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="quantity1">Quantity:</label>
+                        <input type="number" class="form-control quantity" id="quantity1" placeholder="Enter quantity" required>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="btn btn-success btn-block" id="addDress">Add Another Dress</button>
+            <button type="button" class="btn btn-primary btn-block mt-3" onclick="calculateTotal()">Calculate Total and Display Details</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    var dressCount = 1;
+
+    document.getElementById('addDress').addEventListener('click', function() {
+        dressCount++;
+        var dresses = document.getElementById('dresses');
+
+        var html = `
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="dress${dressCount}">Dress:</label>
+                    <select class="form-control" id="dress${dressCount}" required>
+                        <option value="">Select Dress</option>
+                        <option value="frock">frock</option>
+                        <option value="t-shirt">t-shirt</option>
+                        <option value="pant">pant</option>
+                        <option value="shirt">shirt</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="price${dressCount}">Price ($):</label>
+                    <input type="text" class="form-control price" id="price${dressCount}" disabled>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="quantity${dressCount}">Quantity:</label>
+                    <input type="number" class="form-control quantity" id="quantity${dressCount}" placeholder="Enter quantity" required>
+                </div>
+            </div>
+        `;
+
+        var div = document.createElement('div');
+        div.innerHTML = html;
+        dresses.appendChild(div);
+    });
+
+    function calculateTotal() {
+        var individualDetailsHTML = '<h4 class="text-center">Individual Details</h4>';
+
+        var prices = document.querySelectorAll('.price');
+        var quantities = document.querySelectorAll('.quantity');
+
+        prices.forEach(function(price, index) {
+            var priceValue = parseFloat(price.value);
+            var quantity = parseFloat(quantities[index].value);
+
+            if (!isNaN(priceValue) && !isNaN(quantity)) {
+                var dressTotal = priceValue * quantity;
+
+                individualDetailsHTML += `
+                    <div class="mb-2">
+                        <strong>Dress:</strong> ${document.getElementById('dress' + (index + 1)).value}, 
+                        <strong>Price:</strong> $${priceValue}, 
+                        <strong>Quantity:</strong> ${quantity}, 
+                        <strong>Total:</strong> $${dressTotal.toFixed(2)}
+                    </div>
+                `;
+            }
+        });
+
+        // Open a new window or tab with the individual details
+        var detailsWindow = window.open('', '_blank');
+        detailsWindow.document.write('<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Individual Details</title><style>body {margin: 0; padding: 0;}</style></head><body><div class="details-container"><div class="details-content">');
+        detailsWindow.document.write(individualDetailsHTML);
+        detailsWindow.document.write('</div></div></body></html>');
+        detailsWindow.document.close();
+    }
+
+    // Set fixed prices based on dress selection
+    document.addEventListener('change', function(e) {
+        if (e.target && e.target.matches('select')) {
+            var selectedDress = e.target.value;
+            var dressId = e.target.id.replace('dress', '');
+            var priceInput = document.getElementById('price' + dressId);
+
+            switch(selectedDress) {
+                case 'frock':
+                    priceInput.value = '1500'; // Set fixed price for Dress A
+                    break;
+                case 't-shirt':
+                    priceInput.value = '750'; // Set fixed price for Dress B
+                    break;
+                case 'pant':
+                    priceInput.value = '945'; // Set fixed price for Dress C
+                    break;
+                case 'shirt':
+                    priceInput.value = '562'; // Set fixed price for Dress d
+                    break;
+                default:
+                    priceInput.value = ''; // Clear price if no dress selected
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
